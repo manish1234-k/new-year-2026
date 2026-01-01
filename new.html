@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy New Year 2026 💖</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  height:100vh;
+  background:linear-gradient(135deg,#ff4d8d,#ff9a9e);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  overflow:hidden;
+  color:white;
+  font-family:'Poppins',sans-serif;
+}
+
+canvas{position:fixed;inset:0;pointer-events:none;z-index:1}
+
+.container{text-align:center;z-index:5}
+
+input{
+  padding:14px 22px;
+  border:none;
+  border-radius:30px;
+  text-align:center;
+}
+
+button{
+  margin-top:20px;
+  padding:12px 35px;
+  border:none;
+  border-radius:30px;
+  background:#ff216f;
+  color:white;
+  font-size:1rem;
+  cursor:pointer;
+}
+
+.hidden{display:none}
+
+.year{
+  font-size:5.5rem;
+  font-weight:900;
+  margin-top:15px;
+}
+
+/* ⏱ COUNTDOWN */
+.countdown{
+  position:fixed;
+  inset:0;
+  background:#ff216f;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  font-size:7rem;
+  font-weight:900;
+  z-index:10;
+}
+
+/* 🌸❤️⭐ RAIN */
+.fall{
+  position:fixed;
+  top:-40px;
+  font-size:1.8rem;
+  animation:fall linear infinite;
+  z-index:4;
+}
+@keyframes fall{
+  to{transform:translateY(110vh) rotate(360deg)}
+}
+
+/* ✨ NAME STYLE */
+.name{
+  font-family:'Pacifico',cursive;
+  font-size:2.8rem;
+  margin-top:10px;
+  background:linear-gradient(90deg,#fff,#ffe066,#ffb703,#ff006e);
+  -webkit-background-clip:text;
+  color:transparent;
+  animation:glow 2s infinite alternate;
+}
+
+@keyframes glow{
+  from{text-shadow:0 0 10px #fff}
+  to{text-shadow:0 0 25px #ff006e}
+}
+</style>
+</head>
+<body>
+
+<canvas id="fireworks"></canvas>
+
+<audio id="music">
+<source src="inspire.mp3">
+</audio>
+
+<div class="countdown" id="count">5</div>
+
+<div class="container">
+  <div id="landing">
+    <h1>🎉 Welcome 🎉</h1><br>
+    <input id="username" placeholder="Enter your name"><br>
+    <button onclick="start()">Start Celebration</button>
+  </div>
+
+  <div id="celebrate" class="hidden">
+    <h2>✨ Happy New Year ✨</h2>
+    <div class="name" id="wishName"></div>
+    <div class="year" id="yearText">2026</div>
+  </div>
+</div>
+
+<script>
+function start(){
+  const name=document.getElementById("username").value.trim();
+  if(!name){alert("Enter your name");return;}
+  startCountdown(()=>{
+    landing.classList.add("hidden");
+    celebrate.classList.remove("hidden");
+    wishName.innerText=name;
+    music.play();
+    speak();
+    rain();
+    fireworks();
+  });
+}
+
+/* ⏱ COUNTDOWN */
+function startCountdown(done){
+  let n=3;
+  count.style.display="flex";
+  count.innerText=n;
+  const iv=setInterval(()=>{
+    n--;
+    count.innerText=n;
+    if(n<=0){
+      clearInterval(iv);
+      count.style.display="none";
+      done();
+    }
+  },1000);
+}
+
+
+/* 🌸❤️⭐ RAIN */
+function rain(){
+  const icons=["🌸","❤️","⭐","💖"];
+  setInterval(()=>{
+    const e=document.createElement("div");
+    e.className="fall";
+    e.innerText=icons[Math.floor(Math.random()*icons.length)];
+    e.style.left=Math.random()*100+"vw";
+    e.style.animationDuration=3+Math.random()*4+"s";
+    document.body.appendChild(e);
+    setTimeout(()=>e.remove(),9000);
+  },180);
+}
+
+/* 🎆 FIREWORKS */
+const canvas=document.getElementById("fireworks");
+const ctx=canvas.getContext("2d");
+canvas.width=innerWidth;canvas.height=innerHeight;
+let particles=[];
+function fireworks(){
+  setInterval(()=>{
+    const x=Math.random()*canvas.width;
+    const y=Math.random()*canvas.height/2;
+    for(let i=0;i<45;i++){
+      particles.push({
+        x,y,
+        dx:(Math.random()-.5)*6,
+        dy:(Math.random()-.5)*6,
+        life:90,
+        color:`hsl(${Math.random()*360},100%,60%)`
+      });
+    }
+  },700);
+}
+function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach((p,i)=>{
+    p.x+=p.dx;p.y+=p.dy;p.life--;
+    ctx.fillStyle=p.color;
+    ctx.beginPath();ctx.arc(p.x,p.y,2,0,Math.PI*2);ctx.fill();
+    if(p.life<=0)particles.splice(i,1);
+  });
+  requestAnimationFrame(animate);
+}
+animate();
+
+/* 🔊 SPEAK */
+function speak(){
+  const msg=new SpeechSynthesisUtterance("Happy New Year To All ");
+  msg.pitch=1.9;
+  speechSynthesis.speak(msg);
+}
+</script>
+
+</body>
+</html>
